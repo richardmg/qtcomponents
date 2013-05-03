@@ -52,18 +52,18 @@ import QtQuick.Controls.Private 1.0 as Private
     SplitView is a control that lays out items horizontally or
     vertically with a draggable splitter between each item.
 
-    There will always be one (and only one) item in the SplitView that is 'expanding'.
-    Being expanding means that the item will get all the remaining space when other
-    items have been laid out according to their own width and height.
-    By default, the last visible child of the SplitView will be expanding, but
-    this can be changed by setting Layout.fillWidth to \c true.
-    As the expanding item will automatically be resized to fit the extra space, it
+    There will always be one (and only one) item in the SplitView that has Layout.fillWidth
+    set to \c true (or Layout.fillHeight, if orientation is Qt.Vertical). This means that the
+    item will get all the remaining space when other items have been laid out.
+    By default, the last visible child of the SplitView will have this property set, but
+    this can be changed by explititly setting Layout.fillWidth on another item.
+    As this item will automatically be resized to fit the extra space, it
     will ignore explicit assignments to width and height.
 
     A handle can belong to the item either on the left or top side, or on the right or bottom side:
     \list
-    \li If the expanding item is to the right: the handle belongs to the left item.
-    \li if the expanding item is on the left: the handle belongs to the right item.
+    \li If the fillWidth item is to the right: the handle belongs to the left item.
+    \li if the fillWidth item is on the left: the handle belongs to the right item.
     \endlist
 
     This will again control which item gets resized when the user drags a handle,
@@ -74,7 +74,7 @@ import QtQuick.Controls.Private 1.0 as Private
 
     Example:
 
-    To create a SplitView with three items, and let the center item be expanding, one
+    To create a SplitView with three items, and let the center item get superfluous space, one
     could do the following:
 
     \qml
@@ -164,7 +164,7 @@ Item {
         readonly property string implicitSize: horizontal ? "implicitWidth" : "implicitHeight"
         readonly property string implicitOtherSize: horizontal ? "implicitHeight" : "implicitWidth"
 
-        property int expandingIndex: -1
+        property int fillIndex: -1
         property bool updateLayoutGuard: true
 
         function init()
@@ -184,17 +184,17 @@ Item {
                 item.Layout.minimumWidthChanged.connect(d.updateLayout)
                 item.Layout.maximumHeightChanged.connect(d.updateLayout)
                 item.Layout.minimumHeightChanged.connect(d.updateLayout)
-                item.visibleChanged.connect(d.updateExpandingIndex)
-                item.Layout.fillWidthChanged.connect(d.updateExpandingIndex)
-                item.Layout.fillHeightChanged.connect(d.updateExpandingIndex)
+                item.visibleChanged.connect(d.updateFillIndex)
+                item.Layout.fillWidthChanged.connect(d.updateFillIndex)
+                item.Layout.fillHeightChanged.connect(d.updateFillIndex)
             }
 
             d.calculateImplicitSize()
             d.updateLayoutGuard = false
-            d.updateExpandingIndex()
+            d.updateFillIndex()
         }
 
-        function updateExpandingIndex()
+        function updateFillIndex()
         {
             if (!lastItem.visible)
                 return
@@ -204,7 +204,7 @@ Item {
                     break;
             }
 
-            d.expandingIndex = i
+            d.fillIndex = i
             d.updateLayout()
         }
 
@@ -237,7 +237,7 @@ Item {
             return value
         }
 
-        function accumulatedSize(firstIndex, lastIndex, includeExpandingMinimum)
+        function accumulatedSize(firstIndex, lastIndex, includeFillItemMinimum)
         {
             // Go through items and handles, and
             // calculate their acummulated width.
@@ -245,9 +245,9 @@ Item {
             for (var i=firstIndex; i<lastIndex; ++i) {
                 var item = __items[i]
                 if (item.visible) {
-                    if (i !== d.expandingIndex)
+                    if (i !== d.fillIndex)
                         w += item[d.size];
-                    else if (includeExpandingMinimum && item.Layout[minimum] !== undefined)
+                    else if (includeFillItemMinimum && item.Layout[minimum] !== undefined)
                         w += item.Layout[minimum]
 
                     var handle = __handles[i]
@@ -272,19 +272,19 @@ Item {
 
             // Ensure all items within their min/max:
             for (var i=0; i<__items.length; ++i) {
-                if (i !== d.expandingIndex) {
+                if (i !== d.fillIndex) {
                     var item = __items[i];
                     item[d.size] = clampedMinMax(item, item[d.size], d.minimum, d.maximum)
                 }
             }
 
-            // Set size of expanding item to remaining available space.
-            // Special case: If SplitView size is zero, we leave expandingItem with the size
+            // Set size of fillItem to remaining available space.
+            // Special case: If SplitView size is zero, we leave fillItem with the size
             // it already got, and assume that SplitView ends up with implicit size as size:
             if (root[d.size] != 0) {
-                var expandingItem = __items[expandingIndex]
-                var min = expandingItem.Layout[minimum] !== undefined ? expandingItem.Layout[minimum] : 0
-                expandingItem[d.size] = Math.max(min, root[d.size] - d.accumulatedSize(0, __items.length, false))
+                var fillItem = __items[fillIndex]
+                var min = fillItem.Layout[minimum] !== undefined ? fillItem.Layout[minimum] : 0
+                fillItem[d.size] = Math.max(min, root[d.size] - d.accumulatedSize(0, __items.length, false))
             }
 
             // Position items and handles according to their width:
@@ -321,7 +321,7 @@ Item {
             property alias pressed: mouseArea.pressed
             property bool resizing: mouseArea.drag.active
 
-            visible: __items[handleIndex + ((d.expandingIndex >= handleIndex) ? 0 : 1)].visible
+            visible: __items[handleIndex + ((d.fillIndex >= handleIndex) ? 0 : 1)].visible
             sourceComponent: handleDelegate
             onWidthChanged: d.updateLayout()
             onHeightChanged: d.updateLayout()
@@ -344,7 +344,7 @@ Item {
 
             function moveHandle() {
                 // Moving the handle means resizing an item. Which one,
-                // left or right, depends on where the expanding item is.
+                // left or right, depends on where the fillItem is.
                 // 'updateLayout' will be overridden in case new width violates max/min.
                 // 'updateLayout' will be triggered when an item changes width.
                 if (d.updateLayoutGuard)
@@ -354,7 +354,7 @@ Item {
                 var leftEdge, rightEdge, newWidth, leftStopX, rightStopX
                 var i
 
-                if (d.expandingIndex > handleIndex) {
+                if (d.fillIndex > handleIndex) {
                     // Resize item to the left.
                     // Ensure that the handle is not crossing other handles. So
                     // find the first visible handle to the left to determine the left edge:
@@ -421,15 +421,15 @@ Item {
 
     Item {
         id: lastItem
-        onVisibleChanged: d.updateExpandingIndex()
+        onVisibleChanged: d.updateFillIndex()
     }
 
     Component.onDestruction: {
         for (var i=0; i<splitterItems.children.length; ++i) {
             var item = splitterItems.children[i];
-            item.visibleChanged.disconnect(d.updateExpandingIndex)
-            item.Layout.fillWidthChanged.disconnect(d.updateExpandingIndex)
-            item.Layout.fillHeightChanged.disconnect(d.updateExpandingIndex)
+            item.visibleChanged.disconnect(d.updateFillIndex)
+            item.Layout.fillWidthChanged.disconnect(d.updateFillIndex)
+            item.Layout.fillHeightChanged.disconnect(d.updateFillIndex)
         }
     }
 }
