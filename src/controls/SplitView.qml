@@ -152,13 +152,17 @@ Item {
 
     QtObject {
         id: d
-        property bool horizontal: orientation == Qt.Horizontal
-        property string minimum: horizontal ? "minimumWidth" : "minimumHeight"
-        property string maximum: horizontal ? "maximumWidth" : "maximumHeight"
-        property string offset: horizontal ? "x" : "y"
-        property string otherOffset: horizontal ? "y" : "x"
-        property string size: horizontal ? "width" : "height"
-        property string otherSize: horizontal ? "height" : "width"
+        readonly property bool horizontal: orientation == Qt.Horizontal
+        readonly property string minimum: horizontal ? "minimumWidth" : "minimumHeight"
+        readonly property string maximum: horizontal ? "maximumWidth" : "maximumHeight"
+        readonly property string otherMinimum: horizontal ? "minimumHeight" : "minimumWidth"
+        readonly property string otherMaximum: horizontal ? "maximumHeight" : "maximumWidth"
+        readonly property string offset: horizontal ? "x" : "y"
+        readonly property string otherOffset: horizontal ? "y" : "x"
+        readonly property string size: horizontal ? "width" : "height"
+        readonly property string otherSize: horizontal ? "height" : "width"
+        readonly property string implicitSize: horizontal ? "implicitWidth" : "implicitHeight"
+        readonly property string implicitOtherSize: horizontal ? "implicitHeight" : "implicitWidth"
 
         property int expandingIndex: -1
         property bool updateLayoutGuard: true
@@ -185,6 +189,7 @@ Item {
                 item.Layout.fillHeightChanged.connect(d.updateExpandingIndex)
             }
 
+            d.calculateImplicitSize()
             d.updateLayoutGuard = false
             d.updateExpandingIndex()
         }
@@ -201,6 +206,35 @@ Item {
 
             d.expandingIndex = i
             d.updateLayout()
+        }
+
+        function calculateImplicitSize()
+        {
+            var implicitSize = 0
+            var implicitOtherSize = 0
+
+            for (var i=0; i<__items.length; ++i) {
+                var item = __items[i];
+                implicitSize += clampedMinMax(item, item[d.size], d.minimum, d.maximum)
+                var os = clampedMinMax(item, item[d.otherSize], d.otherMinimum, d.otherMaximum)
+                implicitOtherSize = Math.max(implicitOtherSize, os)
+
+                var handle = __handles[i]
+                if (handle)
+                    implicitSize += handle[d.size]
+            }
+
+            root[d.implicitSize] = implicitSize
+            root[d.implicitOtherSize] = implicitOtherSize
+        }
+
+        function clampedMinMax(item, value, minimum, maximum)
+        {
+            if (item.Layout[maximum] !== -1 && value > item.Layout[maximum])
+                value = item.Layout[maximum]
+            if (item.Layout[minimum] !== -1 && value < item.Layout[minimum])
+                value = item.Layout[minimum]
+            return value
         }
 
         function accumulatedSize(firstIndex, lastIndex, includeExpandingMinimum)
@@ -251,15 +285,17 @@ Item {
                 }
             }
 
-            // Set size of expanding item to remaining available space:
-            var expandingItem = __items[expandingIndex]
-            var min = expandingItem.Layout[minimum] !== undefined ? expandingItem.Layout[minimum] : 0
-            expandingItem[d.size] = Math.max(min, root[d.size] - d.accumulatedSize(0, __items.length, false))
+            // Set size of expanding item to remaining available space.
+            // Special case: If SplitView size is zero, we leave expandingItem with the size
+            // it already got, and assume that SplitView ends up with implicit size as size:
+            if (root[d.size] != 0) {
+                var expandingItem = __items[expandingIndex]
+                var min = expandingItem.Layout[minimum] !== undefined ? expandingItem.Layout[minimum] : 0
+                expandingItem[d.size] = Math.max(min, root[d.size] - d.accumulatedSize(0, __items.length, false))
+            }
 
-            // Then, position items and handles according to their width:
+            // Position items and handles according to their width:
             var lastVisibleItem, lastVisibleHandle, handle
-            var implicitSize = min - expandingItem[d.size]
-
             for (i=0; i<__items.length; ++i) {
                 // Position item to the right of the previous visible handle:
                 item = __items[i];
@@ -267,7 +303,6 @@ Item {
                     item[d.offset] = lastVisibleHandle ? lastVisibleHandle[d.offset] + lastVisibleHandle[d.size] : 0
                     item[d.otherOffset] = 0
                     item[d.otherSize] = root[d.otherSize]
-                    implicitSize += item[d.size]
                     lastVisibleItem = item
 
                     handle = __handles[i]
@@ -275,18 +310,9 @@ Item {
                         handle[d.offset] = lastVisibleItem[d.offset] + Math.max(0, lastVisibleItem[d.size])
                         handle[d.otherOffset] = 0
                         handle[d.otherSize] = root[d.otherSize]
-                        implicitSize += handle[d.size]
                         lastVisibleHandle = handle
                     }
                 }
-            }
-
-            if (root.orientation === Qt.horizontal) {
-                root.implicitWidth = implicitSize
-                root.implicitHeight = 0
-            } else {
-                root.implicitWidth = 0
-                root.implicitHeight = implicitSize
             }
 
             d.updateLayoutGuard = false
