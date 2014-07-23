@@ -105,8 +105,12 @@ ApplicationWindow {
             selectByMouse: selectBox.checked
 
             style: TextFieldStyle {
-                cursorHandle: handleBox.checked ? cursorDelegate : null
-                selectionHandle: handleBox.checked ? selectionDelegate : null
+                cursorHandle: handleBox.checked ? textFileIosSelectionStyle.cursorDelegateComponent : null
+                selectionHandle: handleBox.checked ? textFileIosSelectionStyle.selectionDelegateComponent : null
+
+                IosSelectionStyle {
+                    id: textFileIosSelectionStyle
+                }
             }
         }
 
@@ -121,8 +125,12 @@ ApplicationWindow {
             horizontalAlignment: Qt.AlignHCenter
 
             style: SpinBoxStyle {
-                cursorHandle: handleBox.checked ? cursorDelegate : null
-                selectionHandle: handleBox.checked ? selectionDelegate : null
+                cursorHandle: handleBox.checked ? spinBoxIosSelectionStyle.cursorDelegateComponent : null
+                selectionHandle: handleBox.checked ? spinBoxIosSelectionStyle.selectionDelegateComponent : null
+
+                IosSelectionStyle {
+                    id: spinBoxIosSelectionStyle
+                }
             }
         }
 
@@ -148,8 +156,12 @@ ApplicationWindow {
             }
 
             style: ComboBoxStyle {
-                cursorHandle: handleBox.checked ? cursorDelegate : null
-                selectionHandle: handleBox.checked ? selectionDelegate : null
+                cursorHandle: handleBox.checked ? comboboxIosSelectionStyle.cursorDelegateComponent : null
+                selectionHandle: handleBox.checked ? comboboxIosSelectionStyle.selectionDelegateComponent : null
+
+                IosSelectionStyle {
+                    id: comboboxIosSelectionStyle
+                }
             }
         }
 
@@ -164,57 +176,14 @@ ApplicationWindow {
             text: loremIpsum + "<p>" + loremIpsum + "<p>" + loremIpsum + "<p>" + loremIpsum
 
             style: TextAreaStyle {
-                cursorHandle: handleBox.checked ? cursorDelegate : null
-                selectionHandle: handleBox.checked ? selectionDelegate : null
+                cursorHandle: handleBox.checked ? textareaIosSelectionStyle.cursorDelegateComponent : null
+                selectionHandle: handleBox.checked ? textareaIosSelectionStyle.selectionDelegateComponent : null
+
+                IosSelectionStyle {
+                    id: textareaIosSelectionStyle
+                }
             }
         }
     }
 
-    Component {
-        id: selectionDelegate
-        Rectangle {
-            x: -width + edit.font.pixelSize / 2
-            y: (styleData.lineHeight - height) / 2
-            width: edit.font.pixelSize * 2.5
-            height: edit.font.pixelSize * 2.5
-            border.width: outlineBox.checked ? 1 : 0
-            radius: width / 4
-            color: "transparent"
-            Rectangle {
-                color: "white"
-                border.width: 1
-                radius: width / 2
-                width: height
-                height: edit.font.pixelSize / 2
-                anchors.right: parent.right
-                anchors.rightMargin: width / 2
-                anchors.verticalCenter: parent.verticalCenter
-                visible: control.activeFocus && styleData.hasSelection
-            }
-        }
-    }
-
-    Component {
-        id: cursorDelegate
-        Rectangle {
-            x: styleData.hasSelection ? -edit.font.pixelSize / 2 : -width / 2
-            y: (styleData.lineHeight - height) / 2
-            width: edit.font.pixelSize * 2.5
-            height: edit.font.pixelSize * 2.5
-            border.width: outlineBox.checked ? 1 : 0
-            radius: width / 4
-            color: "transparent"
-            Rectangle {
-                color: "white"
-                border.width: 1
-                radius: width / 2
-                width: height
-                height: edit.font.pixelSize / 2
-                anchors.left: parent.left
-                anchors.leftMargin: width / 2
-                anchors.verticalCenter: parent.verticalCenter
-                visible: control.activeFocus && styleData.hasSelection
-            }
-        }
-    }
 }
