@@ -50,6 +50,7 @@ TextInput {
     property bool hasSelection: selectionStart !== selectionEnd
     readonly property int selectionPosition: selectionStart !== cursorPosition ? selectionStart : selectionEnd
     readonly property alias containsMouse: mouseArea.containsMouse
+    property alias editMenu: editMenu
 
     selectByMouse: control.selectByMouse && (!cursorHandle.delegate || !selectionHandle.delegate)
 
@@ -101,16 +102,15 @@ TextInput {
         hoverEnabled: true
         cursorShape: Qt.IBeamCursor
         acceptedButtons: input.selectByMouse ? Qt.NoButton : Qt.LeftButton
-        onClicked: {
-            var pos = input.positionAt(mouse.x, mouse.y)
-            input.moveHandles(pos, pos)
-            input.activate()
-        }
-        onPressAndHold: {
-            var pos = input.positionAt(mouse.x, mouse.y)
-            input.moveHandles(pos, control.selectByMouse ? -1 : pos)
-            input.activate()
-        }
+    }
+
+    EditMenu {
+        id: editMenu
+        input: parent
+        control: parent.control
+        mouseArea: mouseArea
+        cursorHandle: cursorHandle
+        selectionHandle: selectionHandle
     }
 
     TextHandle {
