@@ -38,6 +38,7 @@
 **
 ****************************************************************************/
 import QtQuick 2.2
+import QtQuick.Controls 1.2
 
 TextInput {
     id: input
@@ -58,6 +59,13 @@ TextInput {
     // - contentWidth changes => text layout changed
     property rect selectionRectangle: cursorRectangle.x && contentWidth ? positionToRectangle(selectionPosition)
                                                                         : positionToRectangle(selectionPosition)
+
+    property Menu menu: defaultMenu
+    property alias __cursorHandle: cursorHandle
+    property alias __selectionHandle: selectionHandle
+
+    onMenuChanged: if (__style) __style.setupSelectionMenu(control, input, mouseArea)
+    Component.onCompleted: __style.setupSelectionMenu(control, input, mouseArea)
 
     onSelectionStartChanged: {
         if (!blockRecursion && selectionHandle.delegate) {
@@ -108,10 +116,38 @@ TextInput {
             input.moveHandles(pos, pos)
             input.activate()
         }
-        onPressAndHold: {
-            var pos = input.positionAt(mouse.x, mouse.y)
-            input.moveHandles(pos, control.selectByMouse ? -1 : pos)
-            input.activate()
+    }
+
+    Menu {
+        id: defaultMenu
+        MenuItem {
+            text: "cut"
+            visible: selectionStart !== selectionEnd
+            onTriggered: cut()
+        }
+        MenuItem {
+            text: "copy"
+            visible: selectionStart !== selectionEnd
+            onTriggered: copy();
+        }
+        MenuItem {
+            text: "paste"
+            onTriggered: paste();
+        }
+        MenuItem {
+            text: "delete"
+            visible: selectionStart !== selectionEnd
+            onTriggered: remove(selectionStart, selectionEnd)
+        }
+        MenuItem {
+            text: "select"
+            visible: selectionStart === selectionEnd
+            onTriggered: selectWord();
+        }
+        MenuItem {
+            text: "select all"
+            visible: !(selectionStart === 0 && selectionEnd === length)
+            onTriggered: selectAll();
         }
     }
 

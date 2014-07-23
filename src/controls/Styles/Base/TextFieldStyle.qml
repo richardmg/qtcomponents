@@ -192,4 +192,11 @@ Style {
         \endtable
     */
     property Component selectionHandle
+
+    /*! Delegate function for setting up the selection menu.
+        \since QtQuick.Controls.Styles 1.3
+
+        Override this function in the style to handle the selection menu.
+    */
+    function setupSelectionMenu(control, textInput, mouseArea) {}
 }

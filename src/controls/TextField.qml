@@ -433,6 +433,10 @@ Control {
     */
     property alias validator: textInput.validator
 
+    property alias menu: textInput.menu
+    property alias __cursorHandle: textInput.__cursorHandle
+    property alias __selectionHandle: textInput.__selectionHandle
+
     /*!
         \qmlsignal TextField::accepted()
 
