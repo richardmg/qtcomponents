@@ -162,7 +162,7 @@ Control {
 
         This property indicates whether the control is being hovered.
     */
-    readonly property bool hovered: mouseArea.containsMouse || input.containsMouse
+    readonly property bool hovered: input.editMenu.mouseArea.containsMouse
 
     /*! \qmlproperty int ComboBox::count
         \since QtQuick.Controls 1.1
@@ -390,8 +390,6 @@ Control {
         clip: contentWidth > width
 
         control: comboBox
-        cursorHandle: __style ? __style.cursorHandle : undefined
-        selectionHandle: __style ? __style.selectionHandle : undefined
 
         anchors.fill: parent
         anchors.leftMargin: __style ? __style.padding.left : 0

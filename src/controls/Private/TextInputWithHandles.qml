@@ -43,15 +43,13 @@ TextInput {
     id: input
 
     property Item control
-    property alias cursorHandle: cursorHandle.delegate
-    property alias selectionHandle: selectionHandle.delegate
 
     property bool blockRecursion: false
     property bool hasSelection: selectionStart !== selectionEnd
     readonly property int selectionPosition: selectionStart !== cursorPosition ? selectionStart : selectionEnd
-    readonly property alias containsMouse: mouseArea.containsMouse
+    property alias editMenu: editMenu
 
-    selectByMouse: control.selectByMouse && (!cursorHandle.delegate || !selectionHandle.delegate)
+    selectByMouse: control.selectByMouse && (!editMenu.cursorHandle.delegate || !editMenu.selectionHandle.delegate)
 
     // force re-evaluation when selection moves:
     // - cursorRectangle changes => content scrolled
@@ -59,100 +57,10 @@ TextInput {
     property rect selectionRectangle: cursorRectangle.x && contentWidth ? positionToRectangle(selectionPosition)
                                                                         : positionToRectangle(selectionPosition)
 
-    onSelectionStartChanged: {
-        if (!blockRecursion && selectionHandle.delegate) {
-            blockRecursion = true
-            selectionHandle.position = selectionPosition
-            blockRecursion = false
-        }
-    }
-
-    onCursorPositionChanged: {
-        if (!blockRecursion && cursorHandle.delegate) {
-            blockRecursion = true
-            cursorHandle.position = cursorPosition
-            blockRecursion = false
-        }
-    }
-
-    function activate() {
-        if (activeFocusOnPress) {
-            forceActiveFocus()
-            if (!readOnly)
-                Qt.inputMethod.show()
-        }
-        cursorHandle.activate()
-        selectionHandle.activate()
-    }
-
-    function moveHandles(cursor, selection) {
-        blockRecursion = true
-        cursorPosition = cursor
-        if (selection === -1) {
-            selectWord()
-            selection = selectionStart
-        }
-        selectionHandle.position = selection
-        cursorHandle.position = cursorPosition
-        blockRecursion = false
-    }
-
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.IBeamCursor
-        acceptedButtons: input.selectByMouse ? Qt.NoButton : Qt.LeftButton
-        onClicked: {
-            var pos = input.positionAt(mouse.x, mouse.y)
-            input.moveHandles(pos, pos)
-            input.activate()
-        }
-        onPressAndHold: {
-            var pos = input.positionAt(mouse.x, mouse.y)
-            input.moveHandles(pos, control.selectByMouse ? -1 : pos)
-            input.activate()
-        }
-    }
-
-    TextHandle {
-        id: selectionHandle
-
+    EditMenu {
+        id: editMenu
         editor: input
-        control: input.control
-        active: control.selectByMouse
-        maximum: cursorHandle.position - 1
-        cursorRectangle: editor.selectionRectangle
-
-        onPositionChanged: {
-            if (!input.blockRecursion) {
-                input.blockRecursion = true
-                input.select(selectionHandle.position, cursorHandle.position)
-                if (pressed)
-                    input.ensureVisible(position)
-                input.blockRecursion = false
-            }
-        }
-    }
-
-    TextHandle {
-        id: cursorHandle
-
-        editor: input
-        control: input.control
-        active: control.selectByMouse
-        delegate: style.cursorHandle
-        minimum: input.hasSelection ? selectionHandle.position + 1 : -1
-        cursorRectangle: editor.cursorRectangle
-
-        onPositionChanged: {
-            if (!input.blockRecursion) {
-                input.blockRecursion = true
-                if (!input.hasSelection)
-                    selectionHandle.position = cursorHandle.position
-                input.select(selectionHandle.position, cursorHandle.position)
-                input.blockRecursion = false
-            }
-        }
+        cursorHandleDelegate: __style.cursorHandle
+        selectionHandleDelegate: __style.selectionHandle
     }
 }

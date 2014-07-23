@@ -584,7 +584,7 @@ Control {
 
         This property holds whether the control is being hovered.
     */
-    readonly property alias hovered: textInput.containsMouse
+    readonly property bool hovered: textInput.editMenu.mouseArea.containsMouse
 
     /*! \internal */
     property alias __contentHeight: textInput.contentHeight
@@ -624,8 +624,6 @@ Control {
         selectedTextColor: __panel ? __panel.selectedTextColor : "white"
 
         control: textfield
-        cursorHandle: __style ? __style.cursorHandle : undefined
-        selectionHandle: __style ? __style.selectionHandle : undefined
 
         font: __panel ? __panel.font : TextSingleton.font
         anchors.leftMargin: __panel ? __panel.leftMargin : 0

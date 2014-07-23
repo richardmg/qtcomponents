@@ -757,7 +757,7 @@ ScrollView {
             wrapMode: TextEdit.WordWrap
             textMargin: __style && __style.textMargin !== undefined ? __style.textMargin : 4
 
-            selectByMouse: area.selectByMouse && (!cursorHandle.delegate || !selectionHandle.delegate)
+            selectByMouse: area.selectByMouse && (!editMenu.cursorHandle.delegate || !editMenu.selectionHandle.delegate)
             readOnly: false
 
             Keys.forwardTo: area
@@ -774,123 +774,16 @@ ScrollView {
             property rect selectionRectangle: contentWidth ? positionToRectangle(selectionPosition)
                                                            : positionToRectangle(selectionPosition)
 
-            onSelectionStartChanged: {
-                if (!blockRecursion && selectionHandle.delegate) {
-                    blockRecursion = true
-                    selectionHandle.position = selectionPosition
-                    blockRecursion = false
-                }
-            }
-
-            onCursorPositionChanged: {
-                if (!blockRecursion && cursorHandle.delegate) {
-                    blockRecursion = true
-                    cursorHandle.position = cursorPosition
-                    blockRecursion = false
-                }
-                ensureVisible(cursorRectangle)
-            }
-
-            function ensureVisible(rect) {
-                if (rect.y >= flickableItem.contentY + viewport.height - rect.height - textMargin) {
-                    // moving down
-                    flickableItem.contentY = rect.y - viewport.height +  rect.height + textMargin
-                } else if (rect.y < flickableItem.contentY) {
-                    // moving up
-                    flickableItem.contentY = rect.y - textMargin
-                }
-
-                if (rect.x >= flickableItem.contentX + viewport.width - textMargin) {
-                    // moving right
-                    flickableItem.contentX = rect.x - viewport.width + textMargin
-                } else if (rect.x < flickableItem.contentX) {
-                    // moving left
-                    flickableItem.contentX = rect.x - textMargin
-                }
-            }
-
             onLinkActivated: area.linkActivated(link)
             onLinkHovered: area.linkHovered(link)
 
-            function activate() {
-                if (activeFocusOnPress) {
-                    forceActiveFocus()
-                    if (!readOnly)
-                        Qt.inputMethod.show()
-                }
-                cursorHandle.activate()
-                selectionHandle.activate()
-            }
-
-            function moveHandles(cursor, selection) {
-                blockRecursion = true
-                cursorPosition = cursor
-                if (selection === -1) {
-                    selectWord()
-                    selection = selectionStart
-                }
-                selectionHandle.position = selection
-                cursorHandle.position = cursorPosition
-                blockRecursion = false
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: edit.hoveredLink ? Qt.PointingHandCursor : Qt.IBeamCursor
-                acceptedButtons: edit.selectByMouse ? Qt.NoButton : Qt.LeftButton
-                onClicked: {
-                    var pos = edit.positionAt(mouse.x, mouse.y)
-                    edit.moveHandles(pos, pos)
-                    edit.activate()
-                }
-                onPressAndHold: {
-                    var pos = edit.positionAt(mouse.x, mouse.y)
-                    edit.moveHandles(pos, area.selectByMouse ? -1 : pos)
-                    edit.activate()
-                }
-            }
-
-            TextHandle {
-                id: selectionHandle
-
+            EditMenu {
+                id: editMenu
                 editor: edit
-                control: area
-                active: area.selectByMouse
-                delegate: __style.selectionHandle
-                maximum: cursorHandle.position - 1
-                cursorRectangle: editor.selectionRectangle
-
-                onPositionChanged: {
-                    if (!edit.blockRecursion) {
-                        edit.blockRecursion = true
-                        edit.select(selectionHandle.position, cursorHandle.position)
-                        if (pressed)
-                            edit.ensureVisible(edit.selectionRectangle)
-                        edit.blockRecursion = false
-                    }
-                }
+                cursorHandleDelegate: __style.cursorHandle
+                selectionHandleDelegate: __style.selectionHandle
             }
 
-            TextHandle {
-                id: cursorHandle
-
-                editor: edit
-                control: area
-                active: area.selectByMouse
-                delegate: __style.cursorHandle
-                minimum: edit.hasSelection ? selectionHandle.position + 1 : -1
-                cursorRectangle: editor.cursorRectangle
-
-                onPositionChanged: {
-                    if (!edit.blockRecursion) {
-                        edit.blockRecursion = true
-                        if (!edit.hasSelection)
-                            selectionHandle.position = cursorHandle.position
-                        edit.select(selectionHandle.position, cursorHandle.position)
-                        edit.blockRecursion = false
-                    }
-                }
-            }
         }
     }
 
