@@ -436,6 +436,15 @@ ScrollView {
     readonly property alias hoveredLink: edit.hoveredLink
 
     /*!
+        \qmlproperty Menu TextArea::menu
+        \since QtQuick.Controls 1.3
+
+        This property contains the edit menu for working
+        with text selection.
+    */
+    property Menu menu: editMenu.defaultMenu
+
+    /*!
         \qmlmethod TextArea::append(string)
 
         Appends \a string as a new line to the end of the text area.
@@ -835,6 +844,7 @@ ScrollView {
             }
 
             MouseArea {
+                id: mouseArea
                 anchors.fill: parent
                 cursorShape: edit.hoveredLink ? Qt.PointingHandCursor : Qt.IBeamCursor
                 acceptedButtons: edit.selectByMouse ? Qt.NoButton : Qt.LeftButton
@@ -843,11 +853,15 @@ ScrollView {
                     edit.moveHandles(pos, pos)
                     edit.activate()
                 }
-                onPressAndHold: {
-                    var pos = edit.positionAt(mouse.x, mouse.y)
-                    edit.moveHandles(pos, area.selectByMouse ? -1 : pos)
-                    edit.activate()
-                }
+            }
+
+            EditMenu {
+                id: editMenu
+                control: area
+                input: edit
+                mouseArea: mouseArea
+                cursorHandle: cursorHandle
+                selectionHandle: selectionHandle
             }
 
             TextHandle {
