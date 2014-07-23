@@ -434,6 +434,15 @@ Control {
     property alias validator: textInput.validator
 
     /*!
+        \qmlproperty Menu TextArea::menu
+        \since QtQuick.Controls 1.3
+
+        This property contains the edit menu for working
+        with text selection.
+    */
+    property Menu menu: textInput.editMenu.defaultMenu
+
+    /*!
         \qmlsignal TextField::accepted()
 
         This signal is emitted when the Return or Enter key is pressed.
