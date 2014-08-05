@@ -205,6 +205,10 @@ Control {
 
     style: Qt.createComponent(Settings.style + "/SpinBoxStyle.qml", spinbox)
 
+    property alias menu: input.menu
+    property alias __cursorHandle: input.__cursorHandle
+    property alias __selectionHandle: input.__selectionHandle
+
     /*! \internal */
     function __increment() {
         validator.increment()
