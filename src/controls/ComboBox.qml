@@ -221,6 +221,10 @@ Control {
     */
     property alias validator: input.validator
 
+    property alias menu: input.menu
+    property alias __cursorHandle: input.__cursorHandle
+    property alias __selectionHandle: input.__selectionHandle
+
     /*!
         \qmlproperty bool ComboBox::acceptableInput
         \since QtQuick.Controls 1.1
