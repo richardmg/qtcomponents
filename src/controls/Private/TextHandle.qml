@@ -88,6 +88,7 @@ Loader {
         property real pressX
         property point offset
         onPressed: {
+            Qt.inputMethod.commit()
             pressX = mouse.x
             var handleRect = editor.positionToRectangle(handle.position)
             var centerX = handleRect.x + (handleRect.width / 2)
@@ -101,7 +102,6 @@ Loader {
                 preventStealing = true
         }
         onPositionChanged: {
-            Qt.inputMethod.commit()
             var pt = mapToItem(editor, mouse.x - offset.x, mouse.y - offset.y)
 
             // limit vertically within mix/max coordinates or content bounds
