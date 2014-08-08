@@ -126,7 +126,7 @@ TextInput {
         readonly property real selectionX: input.selectionRectangle.x
         x: input.x + (pressed ? Math.max(0, selectionX) : selectionX)
         y: input.selectionRectangle.y + input.y
-        visible: pressed || (input.hasSelection && handleX + handleWidth >= -1 && handleX <= control.width + 1)
+        visible: input.hasSelection
 
         onPositionChanged: {
             if (!input.blockRecursion) {
@@ -150,8 +150,7 @@ TextInput {
         minimum: input.hasSelection ? selectionHandle.position + 1 : -1
         x: input.cursorRectangle.x + input.x
         y: input.cursorRectangle.y + input.y
-        visible: pressed || ((input.cursorVisible || input.hasSelection)
-                         && handleX + handleWidth >= -1 && handleX <= control.width + 1)
+        visible: input.hasSelection
 
         onPositionChanged: {
             if (!input.blockRecursion) {

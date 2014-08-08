@@ -861,8 +861,7 @@ ScrollView {
                 maximum: cursorHandle.position - 1
                 x: editor.selectionRectangle.x
                 y: editor.selectionRectangle.y
-                visible: pressed || (edit.hasSelection && handleY + handleHeight >= -1 && handleY <= viewport.height + 1
-                                                       && handleX + handleWidth >= -1 && handleX <= viewport.width + 1)
+                visible: edit.hasSelection
 
                 onPositionChanged: {
                     if (!edit.blockRecursion) {
@@ -886,9 +885,7 @@ ScrollView {
                 minimum: edit.hasSelection ? selectionHandle.position + 1 : -1
                 x: editor.cursorRectangle.x
                 y: editor.cursorRectangle.y
-                visible: pressed || ((edit.cursorVisible || edit.hasSelection)
-                                 && handleY + handleHeight >= -1 && handleY <= viewport.height + 1
-                                 && handleX + handleWidth >= -1 && handleX <= viewport.width + 1)
+                visible: edit.hasSelection
 
                 onPositionChanged: {
                     if (!edit.blockRecursion) {
