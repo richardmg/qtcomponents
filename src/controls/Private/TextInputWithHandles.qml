@@ -150,8 +150,7 @@ TextInput {
         minimum: input.hasSelection ? selectionHandle.position + 1 : -1
         x: input.cursorRectangle.x + input.x
         y: input.cursorRectangle.y + input.y
-        visible: pressed || ((input.cursorVisible || input.hasSelection)
-                         && handleX + handleWidth >= -1 && handleX <= control.width + 1)
+        visible: pressed || (input.hasSelection && handleX + handleWidth >= -1 && handleX <= control.width + 1)
 
         onPositionChanged: {
             if (!input.blockRecursion) {

@@ -888,7 +888,7 @@ ScrollView {
                 minimum: edit.hasSelection ? selectionHandle.position + 1 : -1
                 x: edit.cursorRectangle.x - flickableItem.contentX
                 y: edit.cursorRectangle.y - flickableItem.contentY
-                visible: pressed || ((edit.cursorVisible || edit.hasSelection)
+                visible: pressed || (edit.hasSelection
                                  && handleY + handleHeight >= -1 && handleY <= viewport.height + 1
                                  && handleX + handleWidth >= -1 && handleX <= viewport.width + 1)
 
