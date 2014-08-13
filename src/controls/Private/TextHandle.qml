@@ -81,6 +81,19 @@ Loader {
         styleData.activated()
     }
 
+    visible: editor.hasSelection
+    onVisibleChanged: {
+        if (!visible)
+            return;
+
+        // Reparent the handle to the top, so that they
+        // never get obscured or clipped.
+        var p = parent;
+        while (p.parent)
+            p = p.parent
+        parent = p
+    }
+
     MouseArea {
         id: mouse
         anchors.fill: item

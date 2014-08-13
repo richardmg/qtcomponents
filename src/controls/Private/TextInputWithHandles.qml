@@ -119,12 +119,10 @@ TextInput {
         id: selectionHandle
 
         editor: input
-        parent: control
         control: input.control
         active: control.selectByMouse
         maximum: cursorHandle.position - 1
         cursorRectangle: editor.selectionRectangle
-        visible: pressed || (input.hasSelection && handleX + handleWidth >= -1 && handleX <= control.width + 1)
 
         onPositionChanged: {
             if (!input.blockRecursion) {
@@ -141,13 +139,11 @@ TextInput {
         id: cursorHandle
 
         editor: input
-        parent: control
         control: input.control
         active: control.selectByMouse
         delegate: style.cursorHandle
         minimum: input.hasSelection ? selectionHandle.position + 1 : -1
         cursorRectangle: editor.cursorRectangle
-        visible: pressed || (input.hasSelection && handleX + handleWidth >= -1 && handleX <= control.width + 1)
 
         onPositionChanged: {
             if (!input.blockRecursion) {
