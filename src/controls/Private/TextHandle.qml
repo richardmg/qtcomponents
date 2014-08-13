@@ -49,6 +49,7 @@ Loader {
     property int maximum: -1
     property int position: -1
     property alias delegate: handle.sourceComponent
+    property rect cursorRectangle: Qt.rect(0, 0, 0, 0)
 
     readonly property alias pressed: mouse.pressed
 
@@ -67,6 +68,14 @@ Loader {
         readonly property real lineHeight: position !== -1 ? editor.positionToRectangle(position).height
                                                            : editor.cursorRectangle.height
     }
+
+    // The handle is normally reparented higher up in the item hierarchy to not be clipped.
+    // To simplify aligning the handle to the exact rectangle of the cursor, we take care
+    // of positioning the handle relative to the cursor rect here. Since text is drawn
+    // pixel-aligned, we need to do the same for the handle.
+    readonly property var mappedCursorRect: parent.mapFromItem(editor, cursorRectangle.x, cursorRectangle.y)
+    x: mappedCursorRect.x
+    y: Math.floor(mappedCursorRect.y)
 
     function activate() {
         styleData.activated()
