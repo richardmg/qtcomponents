@@ -862,14 +862,10 @@ ScrollView {
 
                 editor: edit
                 control: area
-                z: 1 // above scrollbars
-                parent: __scroller // no clip
                 active: area.selectByMouse
                 delegate: __style.selectionHandle
                 maximum: cursorHandle.position - 1
                 cursorRectangle: editor.selectionRectangle
-                visible: pressed || (edit.hasSelection && handleY + handleHeight >= -1 && handleY <= viewport.height + 1
-                                                       && handleX + handleWidth >= -1 && handleX <= viewport.width + 1)
 
                 onPositionChanged: {
                     if (!edit.blockRecursion) {
@@ -887,15 +883,10 @@ ScrollView {
 
                 editor: edit
                 control: area
-                z: 1 // above scrollbars
-                parent: __scroller // no clip
                 active: area.selectByMouse
                 delegate: __style.cursorHandle
                 minimum: edit.hasSelection ? selectionHandle.position + 1 : -1
                 cursorRectangle: editor.cursorRectangle
-                visible: pressed || (edit.hasSelection
-                                 && handleY + handleHeight >= -1 && handleY <= viewport.height + 1
-                                 && handleX + handleWidth >= -1 && handleX <= viewport.width + 1)
 
                 onPositionChanged: {
                     if (!edit.blockRecursion) {
