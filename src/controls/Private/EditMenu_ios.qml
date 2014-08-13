@@ -88,18 +88,9 @@ Item {
             if (!control.menu)
                 return;
 
-            if (!control.activeFocus || input.selectionStart !== input.selectionEnd) {
-                // Select the word under the tap if the input does not have focus, or
-                // if the input already got a selection.
-                var pos = input.positionAt(mouseArea.mouseX, mouseArea.mouseY);
-                input.select(pos, pos);
-                selectWord()
-            } else {
-                // The input got focus, but no selection. In that case we open up the
-                // menu where the cursor already is to ease operations like
-                // pasting at the exact character (in lack of a magnifyer).
-                openMenu()
-            }
+            var pos = input.positionAt(mouseArea.mouseX, mouseArea.mouseY);
+            input.select(pos, pos);
+            selectWord()
         }
 
         onClicked: {
