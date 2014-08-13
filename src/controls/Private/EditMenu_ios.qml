@@ -81,6 +81,8 @@ Item {
         }
     }
 
+    property bool showMenuFromTouchAndHold: false
+
     Connections {
         target: mouseArea ? mouseArea : null
 
@@ -90,23 +92,28 @@ Item {
 
             var pos = input.positionAt(mouseArea.mouseX, mouseArea.mouseY);
             input.select(pos, pos);
-            selectWord()
+            if (!input.activeFocus || (selectionStart != selectionEnd)) {
+                selectWord();
+            } else {
+                showMenuFromTouchAndHold = true;
+                menuTimer.start();
+            }
         }
 
         onClicked: {
-            // We acquire focus on click, except if we have a selection. In
-            // that case we clear/cancel the selection instead.
-            if (input.selectionStart === input.selectionEnd) {
+            if (control.menu.__popupVisible)
+                clearSelection();
+            else
+                input.activate();
+
+            if (input.activeFocus) {
                 var pos = input.positionAt(mouse.x, mouse.y)
                 input.moveHandles(pos, pos)
-                input.activate()
-            } else {
-                clearSelection();
             }
         }
 
         onCanceled: {
-            control.menu.__dismissMenu();
+            clearSelection();
         }
     }
 
@@ -114,12 +121,14 @@ Item {
         target: control.menu ? control.menu : null
         ignoreUnknownSignals: true
         onPopupVisibleChanged:{
-            if (!control.menu.__popupVisible) {
-                // The menu was closed for some reason. But this might just be because the user is
-                // dragging on handles, or triggered 'select' item etc. But if we're not told to
-                // open it again within a small time frame, we clear the selection.
-                clearSelectionTimer.start();
-            }
+            if (control.menu.__popupVisible)
+                return;
+
+            // The menu was closed for some reason. But this might just be because the user is
+            // dragging on handles, or triggered 'select' item etc. But if we're not told to
+            // open it again within a small time frame, we clear the selection.
+            showMenuFromTouchAndHold = false;
+            clearSelectionTimer.start();
         }
     }
 
@@ -184,7 +193,7 @@ Item {
             if (!control.menu)
                 return;
 
-            if (selectionStart !== selectionEnd && !cursorHandle.pressed && !selectionHandle.pressed)
+            if ((showMenuFromTouchAndHold || selectionStart !== selectionEnd) && !cursorHandle.pressed && !selectionHandle.pressed)
                 openMenu()
             else
                 control.menu.__dismissMenu();
@@ -206,6 +215,8 @@ Item {
 
     function clearSelection()
     {
-        select(selectionEnd, selectionEnd)
+        showMenuFromTouchAndHold = false;
+        select(selectionEnd, selectionEnd);
+        menuTimer.start();
     }
 }
