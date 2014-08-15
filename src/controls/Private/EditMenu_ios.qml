@@ -190,7 +190,7 @@ Item {
         id: menuTimer
         interval: 1
         onTriggered: {
-            if (!control.menu)
+            if (!control.menu || !cursorHandle.delegate)
                 return;
 
             if ((showMenuFromTouchAndHold || selectionStart !== selectionEnd) && !cursorHandle.pressed && !selectionHandle.pressed)

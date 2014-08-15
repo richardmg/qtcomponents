@@ -1,6 +1,6 @@
 TARGET = texthandles
 QT += qml quick
-QMAKE_INFO_PLIST = Info.plist
+#QMAKE_INFO_PLIST = Info.plist
 
 SOURCES += \
     $$PWD/main.cpp
