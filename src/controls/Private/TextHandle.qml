@@ -58,7 +58,6 @@ Loader {
     readonly property real handleWidth: item ? item.width : 0
     readonly property real handleHeight: item ? item.height : 0
 
-    property Item control
     property QtObject styleData: QtObject {
         id: styleData
         signal activated()
