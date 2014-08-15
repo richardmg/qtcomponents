@@ -76,6 +76,7 @@ Loader {
         id: mouse
         anchors.fill: item
         enabled: handle.active && handle.visible
+        preventStealing: true
         property real pressX
         property point offset
         onPressed: {
@@ -86,11 +87,6 @@ Loader {
             var centerY = handleRect.y + (handleRect.height / 2)
             var center = mapFromItem(editor, centerX, centerY)
             offset = Qt.point(mouseX - center.x, mouseY - center.y)
-        }
-        onReleased: preventStealing = false
-        onMouseXChanged: {
-            if (Math.abs(mouse.x - pressX) >= Settings.dragThreshold)
-                preventStealing = true
         }
         onPositionChanged: {
             var pt = mapToItem(editor, mouse.x - offset.x, mouse.y - offset.y)
