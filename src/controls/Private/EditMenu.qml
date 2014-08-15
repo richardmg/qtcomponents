@@ -47,6 +47,7 @@ Loader {
     property MouseArea mouseArea
     property Item cursorHandle
     property Item selectionHandle
+    property Flickable flickable
     property Menu defaultMenu: item ? item.defaultMenu : null
 
     source: Qt.platform.os === "ios"  ? Qt.resolvedUrl("EditMenu_ios.qml") : ""

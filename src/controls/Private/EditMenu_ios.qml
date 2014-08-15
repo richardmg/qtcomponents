@@ -117,20 +117,20 @@ Item {
 //        }
     }
 
-    Connections {
-        target: control.menu ? control.menu : null
-        ignoreUnknownSignals: true
-        onPopupVisibleChanged:{
-            if (control.menu.__popupVisible)
-                return;
+//    Connections {
+//        target: control.menu ? control.menu : null
+//        ignoreUnknownSignals: true
+//        onPopupVisibleChanged:{
+//            if (control.menu.__popupVisible)
+//                return;
 
-            // The menu was closed for some reason. But this might just be because the user is
-            // dragging on handles, or triggered 'select' item etc. But if we're not told to
-            // open it again within a small time frame, we clear the selection.
-            showMenuFromTouchAndHold = false;
-            clearSelectionTimer.start();
-        }
-    }
+//            // The menu was closed for some reason. But this might just be because the user is
+//            // dragging on handles, or triggered 'select' item etc. But if we're not told to
+//            // open it again within a small time frame, we clear the selection.
+//            showMenuFromTouchAndHold = false;
+//            clearSelectionTimer.start();
+//        }
+//    }
 
     Timer {
         id: clearSelectionTimer
@@ -173,6 +173,12 @@ Item {
     }
 
     Connections {
+        target: flickable
+        ignoreUnknownSignals: true
+        onMovingChanged: menuTimer.start()
+    }
+
+    Connections {
         id: selectionConnections
         target: input
         ignoreUnknownSignals: true
@@ -193,7 +199,9 @@ Item {
             if (!control.menu || !cursorHandle.delegate)
                 return;
 
-            if ((showMenuFromTouchAndHold || selectionStart !== selectionEnd) && !cursorHandle.pressed && !selectionHandle.pressed)
+            if ((showMenuFromTouchAndHold || selectionStart !== selectionEnd)
+                    && (!cursorHandle.pressed && !selectionHandle.pressed)
+                    && (!flickable || !flickable.moving))
                 openMenu()
             else
                 control.menu.__dismissMenu();

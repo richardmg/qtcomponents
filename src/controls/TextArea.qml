@@ -855,6 +855,7 @@ ScrollView {
                 mouseArea: mouseArea
                 cursorHandle: cursorHandle
                 selectionHandle: selectionHandle
+                flickable: flickable
             }
 
             TextHandle {
