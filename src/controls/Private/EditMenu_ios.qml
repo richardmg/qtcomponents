@@ -112,9 +112,9 @@ Item {
             }
         }
 
-        onCanceled: {
-            clearSelection();
-        }
+//        onCanceled: {
+//            clearSelection();
+//        }
     }
 
     Connections {
