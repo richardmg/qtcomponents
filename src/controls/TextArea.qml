@@ -436,6 +436,16 @@ ScrollView {
     readonly property alias hoveredLink: edit.hoveredLink
 
     /*!
+        \qmlproperty Menu TextArea::menu
+        \since QtQuick.Controls 1.3
+
+        This property contains the edit menu for working
+        with text selection.
+    */
+    property Menu menu: editMenu.menu
+    onMenuChanged: editMenu.menu = menu
+
+    /*!
         \qmlmethod TextArea::append(string)
 
         Appends \a string as a new line to the end of the text area.

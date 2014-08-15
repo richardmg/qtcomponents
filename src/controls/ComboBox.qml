@@ -222,6 +222,16 @@ Control {
     property alias validator: input.validator
 
     /*!
+        \qmlproperty Menu TextArea::menu
+        \since QtQuick.Controls 1.3
+
+        This property contains the edit menu for working
+        with text selection.
+    */
+    property Menu menu: input.editMenu.menu
+    onMenuChanged: input.editMenu.menu = menu
+
+    /*!
         \qmlproperty bool ComboBox::acceptableInput
         \since QtQuick.Controls 1.1
 
