@@ -44,8 +44,6 @@ TextInput {
 
     property Item control
 
-    property bool blockRecursion: false
-    property bool hasSelection: selectionStart !== selectionEnd
     readonly property int selectionPosition: selectionStart !== cursorPosition ? selectionStart : selectionEnd
     property alias editMenu: editMenu
 
