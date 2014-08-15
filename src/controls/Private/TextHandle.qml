@@ -81,7 +81,7 @@ Loader {
         styleData.activated()
     }
 
-    visible: editor.hasSelection
+    visible: editor.selectionStart !== editor.selectionEnd
     onVisibleChanged: {
         if (!visible)
             return;
