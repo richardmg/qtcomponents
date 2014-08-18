@@ -128,6 +128,7 @@ TextInput {
         x: offset.x
         y: Math.floor(offset.y)
         visible: input.hasSelection
+        onClicked: editor.select(editorPos, editorPos)
 
         onPositionChanged: {
             if (!input.blockRecursion) {
@@ -153,6 +154,7 @@ TextInput {
         x: offset.x
         y: Math.floor(offset.y)
         visible: input.hasSelection
+        onClicked: editor.select(editorPos, editorPos)
 
         onPositionChanged: {
             if (!input.blockRecursion) {

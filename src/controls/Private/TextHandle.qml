@@ -51,6 +51,7 @@ Loader {
     property alias delegate: handle.sourceComponent
 
     readonly property alias pressed: mouse.pressed
+    signal clicked(var mouse, var editorPos)
 
     readonly property real handleX: x + (item ? item.x : 0)
     readonly property real handleY: y + (item ? item.y : 0)
@@ -79,8 +80,11 @@ Loader {
         preventStealing: true
         property real pressX
         property point offset
+        property bool handleDragged: false
+
         onPressed: {
             Qt.inputMethod.commit()
+            handleDragged = false
             pressX = mouse.x
             var handleRect = editor.positionToRectangle(handle.position)
             var centerX = handleRect.x + (handleRect.width / 2)
@@ -88,7 +92,15 @@ Loader {
             var center = mapFromItem(editor, centerX, centerY)
             offset = Qt.point(mouseX - center.x, mouseY - center.y)
         }
+        onReleased: {
+            if (handleDragged)
+                return
+            var mousePos = editor.mapFromItem(item, mouse.x, mouse.y)
+            var editorPos = editor.positionAt(mousePos.x, mousePos.y)
+            handle.clicked(mouse, editorPos)
+        }
         onPositionChanged: {
+            handleDragged = true
             var pt = mapToItem(editor, mouse.x - offset.x, mouse.y - offset.y)
 
             // limit vertically within mix/max coordinates or content bounds

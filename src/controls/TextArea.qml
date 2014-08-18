@@ -862,6 +862,7 @@ ScrollView {
                 x: editor.selectionRectangle.x
                 y: editor.selectionRectangle.y
                 visible: edit.hasSelection
+                onClicked: editor.select(editorPos, editorPos)
 
                 onPositionChanged: {
                     if (!edit.blockRecursion) {
@@ -886,6 +887,7 @@ ScrollView {
                 x: editor.cursorRectangle.x
                 y: editor.cursorRectangle.y
                 visible: edit.hasSelection
+                onClicked: editor.select(editorPos, editorPos)
 
                 onPositionChanged: {
                     if (!edit.blockRecursion) {
