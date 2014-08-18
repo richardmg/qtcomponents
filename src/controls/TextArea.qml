@@ -856,12 +856,11 @@ ScrollView {
                 editor: edit
                 control: area
                 z: 1 // above scrollbars
-                parent: __scroller // no clip
                 active: area.selectByMouse
                 delegate: __style.selectionHandle
                 maximum: cursorHandle.position - 1
-                x: edit.selectionRectangle.x - flickableItem.contentX
-                y: edit.selectionRectangle.y - flickableItem.contentY
+                x: editor.selectionRectangle.x
+                y: editor.selectionRectangle.y
                 visible: pressed || (edit.hasSelection && handleY + handleHeight >= -1 && handleY <= viewport.height + 1
                                                        && handleX + handleWidth >= -1 && handleX <= viewport.width + 1)
 
@@ -882,12 +881,11 @@ ScrollView {
                 editor: edit
                 control: area
                 z: 1 // above scrollbars
-                parent: __scroller // no clip
                 active: area.selectByMouse
                 delegate: __style.cursorHandle
                 minimum: edit.hasSelection ? selectionHandle.position + 1 : -1
-                x: edit.cursorRectangle.x - flickableItem.contentX
-                y: edit.cursorRectangle.y - flickableItem.contentY
+                x: editor.cursorRectangle.x
+                y: editor.cursorRectangle.y
                 visible: pressed || ((edit.cursorVisible || edit.hasSelection)
                                  && handleY + handleHeight >= -1 && handleY <= viewport.height + 1
                                  && handleX + handleWidth >= -1 && handleX <= viewport.width + 1)
